@@ -656,6 +656,7 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
               alignment: Alignment.centerRight,
               heightFactor: 1,
               child: GestureDetector(
+                 behavior: HitTestBehavior.translucent,
                 onTapDown: (details) {
                   widget.controller.pause();
                 },
@@ -665,14 +666,23 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
                 onTapUp: (details) {
                   // if debounce timed out (not active) then continue anim
                   if (_nextDebouncer?.isActive == false) {
+                    
                     widget.controller.play();
+                    
                   } else {
                     if (taps == 1) {
+                      setState(() {
+                        taps = 0;
+                      })
                       widget.controller.next();
-                      taps == 0;
+                      
                     } else {
+                      setState(() {
+                        taps++;
+                      })
+                      
                       widget.controller.play();
-                      taps++;
+                      
                     }
                   }
                 },
@@ -717,7 +727,7 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
             child: SizedBox(
                 child: GestureDetector(onTap: () {
                   widget.controller.previous();
-                }),
+                }, behavior: HitTestBehavior.translucent),
                 width: 70),
           ),
         ],
@@ -876,3 +886,4 @@ class ContrastHelper {
         luminance(rgb1[0], rgb1[1], rgb1[2]);
   }
 }
+

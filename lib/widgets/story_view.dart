@@ -614,6 +614,7 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
     _nextDebouncer?.cancel();
     _nextDebouncer = Timer(Duration(milliseconds: 500), () {});
   }
+  var taps = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -666,7 +667,11 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
                   if (_nextDebouncer?.isActive == false) {
                     widget.controller.play();
                   } else {
-                    widget.controller.next();
+                    if (taps == 1) {
+                      widget.controller.next();
+                    } else {
+                      taps++;
+                    }
                   }
                 },
                 onVerticalDragStart: widget.onVerticalSwipeComplete == null

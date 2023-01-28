@@ -673,13 +673,13 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
                     if (taps == 1) {
                       setState(() {
                         taps = 0;
-                      })
+                      });
                       widget.controller.next();
                       
                     } else {
                       setState(() {
                         taps++;
-                      })
+                      });
                       
                       widget.controller.play();
                       

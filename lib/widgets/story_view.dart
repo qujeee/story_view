@@ -540,7 +540,9 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
   }
 
   void _beginPlay() {
-    setState(() {});
+    setState(() {
+      taps = 0;
+    });
     _play();
   }
 
@@ -740,6 +742,9 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
                   child: GestureDetector(
                       onTap: () {
                         widget.controller.previous();
+                        setState(() {
+                          taps = 0;
+                        });
                       },
                       behavior: HitTestBehavior.translucent),
                 ),

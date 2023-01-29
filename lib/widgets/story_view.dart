@@ -626,7 +626,10 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
             behavior: HitTestBehavior.translucent,
             onPointerDown: (event) => widget.controller.pause(),
             onPointerUp: (event) {
-              taps++;
+              setState(() {
+                taps++;
+              });
+
               widget.controller.play();
             },
             child: _currentView,

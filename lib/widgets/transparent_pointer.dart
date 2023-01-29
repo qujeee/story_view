@@ -109,9 +109,7 @@ class CustomRenderIgnorePointer extends RenderProxyBox {
 
   @override
   bool hitTest(BoxHitTestResult result, {required Offset position}) {
-    if (super.hitTest(result, position: position) && ignoring) {
-      onRenderIgnore!();
-    }
+    onRenderIgnore!();
 
     return !ignoring && super.hitTest(result, position: position);
   }

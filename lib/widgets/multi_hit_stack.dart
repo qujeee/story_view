@@ -1,75 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-class MultiHitStack extends Stack {
-  MultiHitStack({
+class CustomIgnorePointer extends SingleChildRenderObjectWidget {
+  /// Creates a widget that is invisible to hit testing.
+  ///
+  /// The [ignoring] argument must not be null. If [ignoringSemantics] is null,
+  /// this render object will be ignored for semantics if [ignoring] is true.
+  const CustomIgnorePointer(
+    this.onChange, {
     super.key,
-    super.alignment = AlignmentDirectional.topStart,
-    super.textDirection,
-    super.fit = StackFit.loose,
-    super.clipBehavior = Clip.hardEdge,
-    super.children = const <Widget>[],
+    this.ignoring = true,
+    this.ignoringSemantics,
+    super.child,
   });
 
+  final ValueChanged onChange;
+
+  /// Whether this widget is ignored during hit testing.
+  ///
+  /// Regardless of whether this widget is ignored during hit testing, it will
+  /// still consume space during layout and be visible during painting.
+  final bool ignoring;
+
+  /// Whether the semantics of this widget is ignored when compiling the semantics tree.
+  ///
+  /// If null, defaults to value of [ignoring].
+  ///
+  /// See [SemanticsNode] for additional information about the semantics tree.
+  final bool? ignoringSemantics;
+
   @override
-  RenderMultiHitStack createRenderObject(BuildContext context) {
-    return RenderMultiHitStack(
-      alignment: alignment,
-      textDirection: textDirection ?? Directionality.maybeOf(context),
-      fit: fit,
-      clipBehavior: clipBehavior,
+  RenderIgnorePointer createRenderObject(BuildContext context) {
+    return RenderIgnorePointer(
+      ignoring: ignoring,
+      ignoringSemantics: ignoringSemantics,
     );
   }
 
   @override
   void updateRenderObject(
-      BuildContext context, RenderMultiHitStack renderObject) {
+      BuildContext context, RenderIgnorePointer renderObject) {
     renderObject
-      ..alignment = alignment
-      ..textDirection = textDirection ?? Directionality.maybeOf(context)
-      ..fit = fit
-      ..clipBehavior = clipBehavior;
+      ..ignoring = ignoring
+      ..ignoringSemantics = ignoringSemantics;
   }
-}
 
-class RenderMultiHitStack extends RenderStack {
-  RenderMultiHitStack({
-    super.children,
-    super.alignment = AlignmentDirectional.topStart,
-    super.textDirection,
-    super.fit = StackFit.loose,
-    super.clipBehavior = Clip.hardEdge,
-  });
-
-  // NOTE MODIFIED FROM [RenderStack.hitTestChildren], i.e. [defaultHitTestChildren]
   @override
-  bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
-    // NOTE MODIFIED
-    var childHit = false;
-
-    RenderBox? child = lastChild;
-    while (child != null) {
-      // The x, y parameters have the top left of the node's box as the origin.
-      final StackParentData childParentData =
-          child.parentData! as StackParentData;
-      final bool isHit = result.addWithPaintOffset(
-        offset: childParentData.offset,
-        position: position,
-        hitTest: (BoxHitTestResult result, Offset transformed) {
-          assert(transformed == position - childParentData.offset);
-          return child!.hitTest(result, position: transformed);
-        },
-      );
-
-      // NOTE MODIFIED
-      // if (isHit) return true;
-      childHit |= isHit;
-
-      child = childParentData.previousSibling;
-    }
-
-    // NOTE MODIFIED
-    return childHit;
-    // return false;
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<bool>('ignoring', ignoring));
+    properties.add(DiagnosticsProperty<bool>(
+        'ignoringSemantics', ignoringSemantics,
+        defaultValue: null));
   }
 }

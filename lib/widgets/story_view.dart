@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
-import 'package:story_view/widgets/multi_hit_stack.dart';
+import 'package:transparent_pointer/transparent_pointer.dart';
 
 import '../controller/story_controller.dart';
 import '../utils.dart';
@@ -119,7 +119,7 @@ class StoryItem {
       Container(
         key: key,
         color: Colors.black,
-        child: MultiHitStack(
+        child: Stack(
           children: <Widget>[
             StoryImage.url(
               url,
@@ -624,7 +624,7 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
       child: Stack(
         children: <Widget>[
           _currentView,
-          IgnorePointer(
+          TransparentPointer(
             child: Visibility(
               visible: widget.progressPosition != ProgressPosition.none,
               child: Align(
@@ -658,7 +658,7 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
           Align(
               alignment: Alignment.centerRight,
               heightFactor: 1,
-              child: IgnorePointer(
+              child: TransparentPointer(
                 child: GestureDetector(
                   behavior: HitTestBehavior.translucent,
                   onTapDown: (details) {
@@ -726,12 +726,12 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
             alignment: Alignment.centerLeft,
             heightFactor: 1,
             child: SizedBox(
-                child: IgnorePointer(
+                child: TransparentPointer(
                   child: GestureDetector(
                       onTap: () {
                         widget.controller.previous();
                       },
-                      behavior: HitTestBehavior.translucent),
+                      behavior: HitTestBehavior.opaque),
                 ),
                 width: 70),
           ),

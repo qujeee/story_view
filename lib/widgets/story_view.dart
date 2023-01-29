@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:story_view/widgets/multi_hit_stack.dart';
-import 'package:transparent_pointer/transparent_pointer.dart';
 
 import '../controller/story_controller.dart';
 import '../utils.dart';
@@ -625,7 +624,7 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
       child: Stack(
         children: <Widget>[
           _currentView,
-          TransparentPointer(
+          IgnorePointer(
             child: Visibility(
               visible: widget.progressPosition != ProgressPosition.none,
               child: Align(
@@ -659,7 +658,7 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
           Align(
               alignment: Alignment.centerRight,
               heightFactor: 1,
-              child: TransparentPointer(
+              child: IgnorePointer(
                 child: GestureDetector(
                   behavior: HitTestBehavior.translucent,
                   onTapDown: (details) {
@@ -727,7 +726,7 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
             alignment: Alignment.centerLeft,
             heightFactor: 1,
             child: SizedBox(
-                child: TransparentPointer(
+                child: IgnorePointer(
                   child: GestureDetector(
                       onTap: () {
                         widget.controller.previous();

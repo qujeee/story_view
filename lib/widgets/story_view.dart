@@ -438,12 +438,11 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
     return widget.storyItems.firstWhereOrNull((it) => !it!.shown);
   }
 
-  // Widget get _currentView {
-  //   var item = widget.storyItems.firstWhereOrNull((it) => !it!.shown);
-  //   item ??= widget.storyItems.last;
-  //   return item?.view ?? Container();
-  // }
-  Widget _currentView = Container();
+  Widget get _currentView {
+    var item = widget.storyItems.firstWhereOrNull((it) => !it!.shown);
+    item ??= widget.storyItems.last;
+    return item?.view ?? Container();
+  }
 
   @override
   void initState() {
@@ -487,20 +486,8 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
           break;
       }
     });
-    var item = widget.storyItems.firstWhereOrNull((it) => !it!.shown);
-    item ??= widget.storyItems.last;
-
-    _currentView = item?.view ?? Container();
 
     _play();
-  }
-
-  void _updateWidget() {
-    var item = widget.storyItems.firstWhereOrNull((it) => !it!.shown);
-    item ??= widget.storyItems.last;
-    setState(() {
-      _currentView = Container();
-    });
   }
 
   @override
@@ -685,7 +672,6 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
                       setState(() {
                         taps = 0;
                       });
-                      _updateWidget();
                       widget.controller.next();
                     } else {
                       setState(() {

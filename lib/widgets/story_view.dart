@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
@@ -439,11 +438,12 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
     return widget.storyItems.firstWhereOrNull((it) => !it!.shown);
   }
 
-  Widget _currentView() {
-    var item = widget.storyItems.firstWhereOrNull((it) => !it!.shown);
-    item ??= widget.storyItems.last;
-    return item?.view ?? Container();
-  }
+  // Widget get _currentView {
+  //   var item = widget.storyItems.firstWhereOrNull((it) => !it!.shown);
+  //   item ??= widget.storyItems.last;
+  //   return item?.view ?? Container();
+  // }
+  Widget _currentView = Container();
 
   @override
   void initState() {
@@ -487,8 +487,20 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
           break;
       }
     });
+    var item = widget.storyItems.firstWhereOrNull((it) => !it!.shown);
+    item ??= widget.storyItems.last;
+
+    _currentView = item?.view ?? Container();
 
     _play();
+  }
+
+  void _updateWidget() {
+    var item = widget.storyItems.firstWhereOrNull((it) => !it!.shown);
+    item ??= widget.storyItems.last;
+    setState(() {
+      _currentView = item?.view ?? Container();
+    });
   }
 
   @override
@@ -614,6 +626,7 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
     _nextDebouncer?.cancel();
     _nextDebouncer = Timer(Duration(milliseconds: 500), () {});
   }
+
   var taps = 0;
 
   @override
@@ -656,7 +669,7 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
               alignment: Alignment.centerRight,
               heightFactor: 1,
               child: GestureDetector(
-                 behavior: HitTestBehavior.translucent,
+                behavior: HitTestBehavior.translucent,
                 onTapDown: (details) {
                   widget.controller.pause();
                 },
@@ -666,23 +679,20 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
                 onTapUp: (details) {
                   // if debounce timed out (not active) then continue anim
                   if (_nextDebouncer?.isActive == false) {
-                    
                     widget.controller.play();
-                    
                   } else {
                     if (taps == 1) {
                       setState(() {
                         taps = 0;
                       });
+                      _updateWidget();
                       widget.controller.next();
-                      
                     } else {
                       setState(() {
                         taps++;
                       });
-                      
+
                       widget.controller.play();
-                      
                     }
                   }
                 },
@@ -725,9 +735,11 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
             alignment: Alignment.centerLeft,
             heightFactor: 1,
             child: SizedBox(
-                child: GestureDetector(onTap: () {
-                  widget.controller.previous();
-                }, behavior: HitTestBehavior.translucent),
+                child: GestureDetector(
+                    onTap: () {
+                      widget.controller.previous();
+                    },
+                    behavior: HitTestBehavior.translucent),
                 width: 70),
           ),
         ],
@@ -886,4 +898,3 @@ class ContrastHelper {
         luminance(rgb1[0], rgb1[1], rgb1[2]);
   }
 }
-

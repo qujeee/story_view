@@ -1,106 +1,143 @@
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
-/// This widget is invisible for its parent to hit testing, but still
-/// allows its subtree to receive pointer events.
-///
-/// {@tool snippet}
-///
-/// In this example, a drag can be started anywhere in the widget, including on
-/// top of the text button, even though the button is visually in front of the
-/// background gesture detector. At the same time, the button is tappable.
-///
-/// ```dart
-/// class MyWidget extends StatelessWidget {
-///   @override
-///   Widget build(BuildContext context) {
-///     return Stack(
-///       children: [
-///         GestureDetector(
-///           behavior: HitTestBehavior.opaque,
-///           onVerticalDragStart: (_) => print("Background drag started"),
-///         ),
-///         Positioned(
-///           top: 60,
-///           left: 60,
-///           height: 60,
-///           width: 60,
-///           child: TransparentPointer(
-///             child: TextButton(
-///               child: Text("Tap me"),
-///               onPressed: () => print("You tapped me"),
-///             ),
-///           ),
-///         ),
-///       ],
-///     );
-///   }
-/// }
-/// ```
-/// {@end-tool}
-///
-/// See also:
-///
-///  * [IgnorePointer], which is also invisible for its parent during hit testing, but
-///    does not allow its subtree to receive pointer events.
-///  * [AbsorbPointer], which is visible during hit testing, but prevents its subtree
-///    from receiving pointer event. The opposite of this widget.
-class TransparentPointer extends SingleChildRenderObjectWidget {
-  /// Creates a widget that is invisible for its parent to hit testing, but still
-  /// allows its subtree to receive pointer events.
-  const TransparentPointer({
-    Key? key,
-    this.transparent = true,
-    required Widget child,
-  }) : super(key: key, child: child);
+class CustomIgnorePointer extends SingleChildRenderObjectWidget {
+  /// Creates a widget that is invisible to hit testing.
+  ///
+  /// The [ignoring] argument must not be null. If [ignoringSemantics] is null,
+  /// this render object will be ignored for semantics if [ignoring] is true.
+  const CustomIgnorePointer({
+    super.key,
+    this.onIgnore,
+    this.ignoring = true,
+    this.ignoringSemantics,
+    super.child,
+  });
+  final VoidCallback? onIgnore;
 
-  /// Whether this widget is invisible to its parent during hit testing.
-  final bool transparent;
+  /// Whether this widget is ignored during hit testing.
+  ///
+  /// Regardless of whether this widget is ignored during hit testing, it will
+  /// still consume space during layout and be visible during painting.
+  final bool ignoring;
+
+  /// Whether the semantics of this widget is ignored when compiling the semantics tree.
+  ///
+  /// If null, defaults to value of [ignoring].
+  ///
+  /// See [SemanticsNode] for additional information about the semantics tree.
+  final bool? ignoringSemantics;
 
   @override
-  RenderTransparentPointer createRenderObject(BuildContext context) {
-    return RenderTransparentPointer(
-      transparent: transparent,
+  CustomRenderIgnorePointer createRenderObject(BuildContext context) {
+    return CustomRenderIgnorePointer(
+      onRenderIgnore: () => onIgnore!(),
+      ignoring: ignoring,
+      ignoringSemantics: ignoringSemantics,
     );
   }
 
   @override
   void updateRenderObject(
-      BuildContext context, RenderTransparentPointer renderObject) {
-    renderObject..transparent = transparent;
+      BuildContext context, CustomRenderIgnorePointer renderObject) {
+    renderObject
+      ..ignoring = ignoring
+      ..ignoringSemantics = ignoringSemantics;
   }
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<bool>('transparent', transparent));
+    properties.add(DiagnosticsProperty<bool>('ignoring', ignoring));
+    properties.add(DiagnosticsProperty<bool>(
+        'ignoringSemantics', ignoringSemantics,
+        defaultValue: null));
   }
 }
 
-class RenderTransparentPointer extends RenderProxyBox {
-  RenderTransparentPointer({
+class CustomRenderIgnorePointer extends RenderProxyBox {
+  /// Creates a render object that is invisible to hit testing.
+  ///
+  /// The [ignoring] argument must not be null. If [ignoringSemantics] is null,
+  /// this render object will be ignored for semantics if [ignoring] is true.
+  CustomRenderIgnorePointer({
     RenderBox? child,
-    bool transparent = true,
-  })  : _transparent = transparent,
+    bool ignoring = true,
+    this.onRenderIgnore,
+    bool? ignoringSemantics,
+  })  : _ignoring = ignoring,
+        _ignoringSemantics = ignoringSemantics,
         super(child);
 
-  bool get transparent => _transparent;
-  bool _transparent;
+  final VoidCallback? onRenderIgnore;
 
-  set transparent(bool value) {
-    if (value == _transparent) return;
-    _transparent = value;
+  /// Whether this render object is ignored during hit testing.
+  ///
+  /// Regardless of whether this render object is ignored during hit testing, it
+  /// will still consume space during layout and be visible during painting.
+  bool get ignoring => _ignoring;
+  bool _ignoring;
+  set ignoring(bool value) {
+    if (value == _ignoring) {
+      return;
+    }
+    _ignoring = value;
+    if (_ignoringSemantics == null || !_ignoringSemantics!) {
+      markNeedsSemanticsUpdate();
+    }
   }
+
+  /// Whether the semantics of this render object is ignored when compiling the semantics tree.
+  ///
+  /// If null, defaults to value of [ignoring].
+  ///
+  /// See [SemanticsNode] for additional information about the semantics tree.
+  bool? get ignoringSemantics => _ignoringSemantics;
+  bool? _ignoringSemantics;
+  set ignoringSemantics(bool? value) {
+    if (value == _ignoringSemantics) {
+      return;
+    }
+    final bool oldEffectiveValue = _effectiveIgnoringSemantics;
+    _ignoringSemantics = value;
+    if (oldEffectiveValue != _effectiveIgnoringSemantics) {
+      markNeedsSemanticsUpdate();
+    }
+  }
+
+  bool get _effectiveIgnoringSemantics => ignoringSemantics ?? ignoring;
 
   @override
   bool hitTest(BoxHitTestResult result, {required Offset position}) {
-    final hit = super.hitTest(result, position: position);
-    return !transparent;
+    if (super.hitTest(result, position: position) && ignoring) {
+      onRenderIgnore!();
+    }
+
+    return !ignoring && super.hitTest(result, position: position);
+  }
+
+  // TODO(ianh): figure out a way to still include labels and flags in
+  // descendants, just make them non-interactive, even when
+  // _effectiveIgnoringSemantics is true
+  @override
+  void visitChildrenForSemantics(RenderObjectVisitor visitor) {
+    if (child != null && !_effectiveIgnoringSemantics) {
+      visitor(child!);
+    }
   }
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<bool>('transparent', transparent));
+    properties.add(DiagnosticsProperty<bool>('ignoring', ignoring));
+    properties.add(
+      DiagnosticsProperty<bool>(
+        'ignoringSemantics',
+        _effectiveIgnoringSemantics,
+        description: ignoringSemantics == null
+            ? 'implicitly $_effectiveIgnoringSemantics'
+            : null,
+      ),
+    );
   }
 }

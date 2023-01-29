@@ -653,10 +653,10 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
               ),
             ),
           ),
-          TransparentPointer(
-            child: Align(
-                alignment: Alignment.centerRight,
-                heightFactor: 1,
+          Align(
+              alignment: Alignment.centerRight,
+              heightFactor: 1,
+              child: TransparentPointer(
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTapDown: (details) {
@@ -718,20 +718,20 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
 
                           verticalDragInfo = null;
                         },
-                )),
-          ),
-          TransparentPointer(
-            child: Align(
-              alignment: Alignment.centerLeft,
-              heightFactor: 1,
-              child: SizedBox(
+                ),
+              )),
+          Align(
+            alignment: Alignment.centerLeft,
+            heightFactor: 1,
+            child: SizedBox(
+                child: TransparentPointer(
                   child: GestureDetector(
                       onTap: () {
                         widget.controller.previous();
                       },
                       behavior: HitTestBehavior.opaque),
-                  width: 70),
-            ),
+                ),
+                width: 70),
           ),
         ],
       ),

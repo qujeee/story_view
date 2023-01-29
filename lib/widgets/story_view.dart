@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
-import 'package:story_view/widgets/transparent_pointer.dart';
 
 import '../controller/story_controller.dart';
 import '../utils.dart';
@@ -623,7 +622,15 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
       color: Colors.white,
       child: Stack(
         children: <Widget>[
-          _currentView,
+          Listener(
+            behavior: HitTestBehavior.translucent,
+            onPointerDown: (event) => widget.controller.pause(),
+            onPointerUp: (event) {
+              taps++;
+              widget.controller.play();
+            },
+            child: _currentView,
+          ),
           Visibility(
             visible: widget.progressPosition != ProgressPosition.none,
             child: Align(
@@ -656,12 +663,7 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
           Align(
               alignment: Alignment.centerRight,
               heightFactor: 1,
-              child: CustomIgnorePointer(
-                onIgnore: () {
-                  setState(() {
-                    taps++;
-                  });
-                },
+              child: IgnorePointer(
                 ignoring: taps < 1 ? true : false,
                 child: GestureDetector(
                   behavior: HitTestBehavior.translucent,
@@ -676,7 +678,7 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
                     if (_nextDebouncer?.isActive == false) {
                       widget.controller.play();
                     } else {
-                      if (taps == 1) {
+                      if (taps >= 1) {
                         setState(() {
                           taps = 0;
                         });
@@ -730,18 +732,13 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
             alignment: Alignment.centerLeft,
             heightFactor: 1,
             child: SizedBox(
-                child: CustomIgnorePointer(
-                  onIgnore: () {
-                    setState(() {
-                      taps++;
-                    });
-                  },
+                child: IgnorePointer(
                   ignoring: taps < 1 ? true : false,
                   child: GestureDetector(
                       onTap: () {
                         widget.controller.previous();
                       },
-                      behavior: HitTestBehavior.opaque),
+                      behavior: HitTestBehavior.translucent),
                 ),
                 width: 70),
           ),

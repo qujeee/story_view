@@ -625,30 +625,32 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
       child: Stack(
         children: <Widget>[
           _currentView,
-          Visibility(
-            visible: widget.progressPosition != ProgressPosition.none,
-            child: Align(
-              alignment: widget.progressPosition == ProgressPosition.top
-                  ? Alignment.topCenter
-                  : Alignment.bottomCenter,
-              child: SafeArea(
-                bottom: widget.inline ? false : true,
-                // we use SafeArea here for notched and bezeles phones
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  child: PageBar(
-                    widget.storyItems
-                        .map((it) => PageData(it!.duration, it.shown))
-                        .toList(),
-                    this._currentAnimation,
-                    key: UniqueKey(),
-                    indicatorHeight: widget.inline
-                        ? IndicatorHeight.small
-                        : IndicatorHeight.large,
-                    indicatorColor: widget.indicatorColor,
+          TransparentPointer(
+            child: Visibility(
+              visible: widget.progressPosition != ProgressPosition.none,
+              child: Align(
+                alignment: widget.progressPosition == ProgressPosition.top
+                    ? Alignment.topCenter
+                    : Alignment.bottomCenter,
+                child: SafeArea(
+                  bottom: widget.inline ? false : true,
+                  // we use SafeArea here for notched and bezeles phones
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    child: PageBar(
+                      widget.storyItems
+                          .map((it) => PageData(it!.duration, it.shown))
+                          .toList(),
+                      this._currentAnimation,
+                      key: UniqueKey(),
+                      indicatorHeight: widget.inline
+                          ? IndicatorHeight.small
+                          : IndicatorHeight.large,
+                      indicatorColor: widget.indicatorColor,
+                    ),
                   ),
                 ),
               ),
@@ -721,20 +723,18 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
                         },
                 ),
               )),
-          IgnorePointer(
-            child: Align(
-              alignment: Alignment.centerLeft,
-              heightFactor: 1,
-              child: SizedBox(
-                  child: TransparentPointer(
-                    child: GestureDetector(
-                        onTap: () {
-                          widget.controller.previous();
-                        },
-                        behavior: HitTestBehavior.translucent),
-                  ),
-                  width: 70),
-            ),
+          Align(
+            alignment: Alignment.centerLeft,
+            heightFactor: 1,
+            child: SizedBox(
+                child: TransparentPointer(
+                  child: GestureDetector(
+                      onTap: () {
+                        widget.controller.previous();
+                      },
+                      behavior: HitTestBehavior.translucent),
+                ),
+                width: 70),
           ),
         ],
       ),

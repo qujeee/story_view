@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
-import 'package:transparent_pointer/transparent_pointer.dart';
+import 'package:story_view/widgets/transparent_pointer.dart';
 
 import '../controller/story_controller.dart';
 import '../utils.dart';

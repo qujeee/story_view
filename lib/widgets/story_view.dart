@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
-import 'package:transparent_pointer/transparent_pointer.dart';
 
 import '../controller/story_controller.dart';
 import '../utils.dart';
@@ -624,115 +623,115 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
       child: Stack(
         children: <Widget>[
           _currentView,
-          Visibility(
-            visible: widget.progressPosition != ProgressPosition.none,
-            child: Align(
-              alignment: widget.progressPosition == ProgressPosition.top
-                  ? Alignment.topCenter
-                  : Alignment.bottomCenter,
-              child: SafeArea(
-                bottom: widget.inline ? false : true,
-                // we use SafeArea here for notched and bezeles phones
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  child: PageBar(
-                    widget.storyItems
-                        .map((it) => PageData(it!.duration, it.shown))
-                        .toList(),
-                    this._currentAnimation,
-                    key: UniqueKey(),
-                    indicatorHeight: widget.inline
-                        ? IndicatorHeight.small
-                        : IndicatorHeight.large,
-                    indicatorColor: widget.indicatorColor,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          TransparentPointer(
-            child: Align(
-                alignment: Alignment.centerRight,
-                heightFactor: 1,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTapDown: (details) {
-                    widget.controller.pause();
-                  },
-                  onTapCancel: () {
-                    widget.controller.play();
-                  },
-                  onTapUp: (details) {
-                    // if debounce timed out (not active) then continue anim
-                    if (_nextDebouncer?.isActive == false) {
-                      widget.controller.play();
-                    } else {
-                      if (taps == 1) {
-                        setState(() {
-                          taps = 0;
-                        });
-                        widget.controller.next();
-                      } else {
-                        setState(() {
-                          taps++;
-                        });
+          // Visibility(
+          //   visible: widget.progressPosition != ProgressPosition.none,
+          //   child: Align(
+          //     alignment: widget.progressPosition == ProgressPosition.top
+          //         ? Alignment.topCenter
+          //         : Alignment.bottomCenter,
+          //     child: SafeArea(
+          //       bottom: widget.inline ? false : true,
+          //       // we use SafeArea here for notched and bezeles phones
+          //       child: Container(
+          //         padding: EdgeInsets.symmetric(
+          //           horizontal: 16,
+          //           vertical: 8,
+          //         ),
+          //         child: PageBar(
+          //           widget.storyItems
+          //               .map((it) => PageData(it!.duration, it.shown))
+          //               .toList(),
+          //           this._currentAnimation,
+          //           key: UniqueKey(),
+          //           indicatorHeight: widget.inline
+          //               ? IndicatorHeight.small
+          //               : IndicatorHeight.large,
+          //           indicatorColor: widget.indicatorColor,
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
+          // TransparentPointer(
+          //   child: Align(
+          //       alignment: Alignment.centerRight,
+          //       heightFactor: 1,
+          //       child: GestureDetector(
+          //         behavior: HitTestBehavior.opaque,
+          //         onTapDown: (details) {
+          //           widget.controller.pause();
+          //         },
+          //         onTapCancel: () {
+          //           widget.controller.play();
+          //         },
+          //         onTapUp: (details) {
+          //           // if debounce timed out (not active) then continue anim
+          //           if (_nextDebouncer?.isActive == false) {
+          //             widget.controller.play();
+          //           } else {
+          //             if (taps == 1) {
+          //               setState(() {
+          //                 taps = 0;
+          //               });
+          //               widget.controller.next();
+          //             } else {
+          //               setState(() {
+          //                 taps++;
+          //               });
 
-                        widget.controller.play();
-                      }
-                    }
-                  },
-                  onVerticalDragStart: widget.onVerticalSwipeComplete == null
-                      ? null
-                      : (details) {
-                          widget.controller.pause();
-                        },
-                  onVerticalDragCancel: widget.onVerticalSwipeComplete == null
-                      ? null
-                      : () {
-                          widget.controller.play();
-                        },
-                  onVerticalDragUpdate: widget.onVerticalSwipeComplete == null
-                      ? null
-                      : (details) {
-                          if (verticalDragInfo == null) {
-                            verticalDragInfo = VerticalDragInfo();
-                          }
+          //               widget.controller.play();
+          //             }
+          //           }
+          //         },
+          //         onVerticalDragStart: widget.onVerticalSwipeComplete == null
+          //             ? null
+          //             : (details) {
+          //                 widget.controller.pause();
+          //               },
+          //         onVerticalDragCancel: widget.onVerticalSwipeComplete == null
+          //             ? null
+          //             : () {
+          //                 widget.controller.play();
+          //               },
+          //         onVerticalDragUpdate: widget.onVerticalSwipeComplete == null
+          //             ? null
+          //             : (details) {
+          //                 if (verticalDragInfo == null) {
+          //                   verticalDragInfo = VerticalDragInfo();
+          //                 }
 
-                          verticalDragInfo!.update(details.primaryDelta!);
+          //                 verticalDragInfo!.update(details.primaryDelta!);
 
-                          // TODO: provide callback interface for animation purposes
-                        },
-                  onVerticalDragEnd: widget.onVerticalSwipeComplete == null
-                      ? null
-                      : (details) {
-                          widget.controller.play();
-                          // finish up drag cycle
-                          if (!verticalDragInfo!.cancel &&
-                              widget.onVerticalSwipeComplete != null) {
-                            widget.onVerticalSwipeComplete!(
-                                verticalDragInfo!.direction);
-                          }
+          //                 // TODO: provide callback interface for animation purposes
+          //               },
+          //         onVerticalDragEnd: widget.onVerticalSwipeComplete == null
+          //             ? null
+          //             : (details) {
+          //                 widget.controller.play();
+          //                 // finish up drag cycle
+          //                 if (!verticalDragInfo!.cancel &&
+          //                     widget.onVerticalSwipeComplete != null) {
+          //                   widget.onVerticalSwipeComplete!(
+          //                       verticalDragInfo!.direction);
+          //                 }
 
-                          verticalDragInfo = null;
-                        },
-                )),
-          ),
-          TransparentPointer(
-            child: Align(
-              alignment: Alignment.centerLeft,
-              heightFactor: 1,
-              child: SizedBox(
-                  child: GestureDetector(
-                      onTap: () {
-                        widget.controller.previous();
-                      },
-                      behavior: HitTestBehavior.opaque),
-                  width: 70),
-            ),
-          ),
+          //                 verticalDragInfo = null;
+          //               },
+          //       )),
+          // ),
+          // TransparentPointer(
+          //   child: Align(
+          //     alignment: Alignment.centerLeft,
+          //     heightFactor: 1,
+          //     child: SizedBox(
+          //         child: GestureDetector(
+          //             onTap: () {
+          //               widget.controller.previous();
+          //             },
+          //             behavior: HitTestBehavior.opaque),
+          //         width: 70),
+          //   ),
+          // ),
         ],
       ),
     );

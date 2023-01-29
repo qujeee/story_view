@@ -499,7 +499,7 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
     var item = widget.storyItems.firstWhereOrNull((it) => !it!.shown);
     item ??= widget.storyItems.last;
     setState(() {
-      _currentView = item?.view ?? Container();
+      _currentView = Container();
     });
   }
 

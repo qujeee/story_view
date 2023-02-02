@@ -672,37 +672,34 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
                 ignoring: false,
                 child: GestureDetector(
                   behavior: HitTestBehavior.translucent,
-                  onTapDown: taps < 1
-                      ? null
-                      : (details) {
-                          widget.controller.pause();
-                        },
-                  onTapCancel: taps < 1
-                      ? null
-                      : () {
-                          widget.controller.play();
-                        },
-                  onTapUp: taps < 1
-                      ? null
-                      : (details) {
-                          // if debounce timed out (not active) then continue anim
-                          if (_nextDebouncer?.isActive == false) {
-                            widget.controller.play();
-                          } else {
-                            if (taps >= 1) {
-                              setState(() {
-                                taps = 0;
-                              });
-                              widget.controller.next();
-                            } else {
-                              setState(() {
-                                taps++;
-                              });
-
+                  onTapDown:
+                      (taps < 1 || (_animationController?.value ?? 0) > 0.65)
+                          ? null
+                          : (details) {
+                              widget.controller.pause();
+                            },
+                  onTapCancel:
+                      (taps < 1 || (_animationController?.value ?? 0) > 0.65)
+                          ? null
+                          : () {
                               widget.controller.play();
-                            }
-                          }
-                        },
+                            },
+                  onTapUp:
+                      (taps < 1 || (_animationController?.value ?? 0) > 0.65)
+                          ? null
+                          : (details) {
+                              // if debounce timed out (not active) then continue anim
+                              if (_nextDebouncer?.isActive == false) {
+                                widget.controller.play();
+                              } else {
+                                setState(() {
+                                  taps = 0;
+                                });
+                                widget.controller.next();
+
+                                widget.controller.play();
+                              }
+                            },
                   onVerticalDragStart: widget.onVerticalSwipeComplete == null
                       ? null
                       : (details) {

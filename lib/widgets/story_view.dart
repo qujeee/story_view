@@ -488,6 +488,9 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
     });
 
     _play();
+    _animationController?.addListener(() {
+      setState(() {});
+    });
   }
 
   @override

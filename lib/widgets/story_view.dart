@@ -669,34 +669,40 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
               alignment: Alignment.centerRight,
               heightFactor: 1,
               child: IgnorePointer(
-                ignoring: taps < 1 ? true : false,
+                ignoring: false,
                 child: GestureDetector(
                   behavior: HitTestBehavior.translucent,
-                  onTapDown: (details) {
-                    widget.controller.pause();
-                  },
-                  onTapCancel: () {
-                    widget.controller.play();
-                  },
-                  onTapUp: (details) {
-                    // if debounce timed out (not active) then continue anim
-                    if (_nextDebouncer?.isActive == false) {
-                      widget.controller.play();
-                    } else {
-                      if (taps >= 1) {
-                        setState(() {
-                          taps = 0;
-                        });
-                        widget.controller.next();
-                      } else {
-                        setState(() {
-                          taps++;
-                        });
+                  onTapDown: taps < 1
+                      ? null
+                      : (details) {
+                          widget.controller.pause();
+                        },
+                  onTapCancel: taps < 1
+                      ? null
+                      : () {
+                          widget.controller.play();
+                        },
+                  onTapUp: taps < 1
+                      ? null
+                      : (details) {
+                          // if debounce timed out (not active) then continue anim
+                          if (_nextDebouncer?.isActive == false) {
+                            widget.controller.play();
+                          } else {
+                            if (taps >= 1) {
+                              setState(() {
+                                taps = 0;
+                              });
+                              widget.controller.next();
+                            } else {
+                              setState(() {
+                                taps++;
+                              });
 
-                        widget.controller.play();
-                      }
-                    }
-                  },
+                              widget.controller.play();
+                            }
+                          }
+                        },
                   onVerticalDragStart: widget.onVerticalSwipeComplete == null
                       ? null
                       : (details) {

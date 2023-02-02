@@ -673,19 +673,19 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
                 child: GestureDetector(
                   behavior: HitTestBehavior.translucent,
                   onTapDown:
-                      (taps < 1 || (_animationController?.value ?? 0) < 0.65)
+                      (taps < 1 && (_animationController?.value ?? 0) < 0.60)
                           ? null
                           : (details) {
                               widget.controller.pause();
                             },
                   onTapCancel:
-                      (taps < 1 || (_animationController?.value ?? 0) < 0.65)
+                      (taps < 1 && (_animationController?.value ?? 0) < 0.60)
                           ? null
                           : () {
                               widget.controller.play();
                             },
                   onTapUp:
-                      (taps < 1 || (_animationController?.value ?? 0) < 0.65)
+                      (taps < 1 && (_animationController?.value ?? 0) < 0.60)
                           ? null
                           : (details) {
                               // if debounce timed out (not active) then continue anim

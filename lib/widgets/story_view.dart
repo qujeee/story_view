@@ -488,10 +488,6 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
     });
 
     _play();
-    _animationController?.addListener(() {
-      print('Poep');
-      setState(() {});
-    });
   }
 
   @override
@@ -524,6 +520,10 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
 
     _animationController =
         AnimationController(duration: storyItem.duration, vsync: this);
+
+    _animationController?.addListener(() {
+      setState(() {});
+    });
 
     _animationController!.addStatusListener((status) {
       if (status == AnimationStatus.completed) {

@@ -673,21 +673,20 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
                 child: GestureDetector(
                   behavior: HitTestBehavior.translucent,
                   onTapDown:
-                      (taps < 1 && (_animationController?.value ?? 0) < 0.60)
-                          ? null
-                          : (details) {
+                      (taps >= 1 || (_animationController?.value ?? 0) > 0.60)
+                          ? (details) {
                               widget.controller.pause();
-                            },
+                            }
+                          : null,
                   onTapCancel:
-                      (taps < 1 && (_animationController?.value ?? 0) < 0.60)
-                          ? null
-                          : () {
+                      (taps >= 1 || (_animationController?.value ?? 0) > 0.60)
+                          ? () {
                               widget.controller.play();
-                            },
+                            }
+                          : null,
                   onTapUp:
-                      (taps < 1 && (_animationController?.value ?? 0) < 0.60)
-                          ? null
-                          : (details) {
+                      (taps >= 1 || (_animationController?.value ?? 0) > 0.60)
+                          ? (details) {
                               // if debounce timed out (not active) then continue anim
                               if (_nextDebouncer?.isActive == false) {
                                 widget.controller.play();
@@ -699,7 +698,8 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
 
                                 widget.controller.play();
                               }
-                            },
+                            }
+                          : null,
                   onVerticalDragStart: widget.onVerticalSwipeComplete == null
                       ? null
                       : (details) {
